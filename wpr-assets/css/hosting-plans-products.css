@@ -1,0 +1,48 @@
+.variations_form {
+  margin: 2rem 0 0 0 !important;
+}
+
+.woocommerce-variation {
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+.variations tr {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.variations tr td.label {
+  flex-basis: 100%;
+}
+
+.variations tr td.value {
+  display: flex;
+}
+
+.variations select {
+  margin: 0 !important;
+}
+
+.reset_variations {
+  display: none;
+  margin-left: 0.5rem;
+}
+
+.woocommerce-variation-description {
+  background: pink;
+  width: fit-content;
+  border-radius: 5px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.woocommerce-variation-description p {
+  padding: 0.4rem;
+}
+
+.woocommerce-variation-add-to-cart {
+  display: flex;
+  justify-content: center;
+}
