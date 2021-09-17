@@ -33,9 +33,8 @@ function WebPloverScripts()
   }
   // -------------------- //
 
-  global $post;
 
-  if ($post->post_name === 'cloud-hosting' && $post->post_type === 'product') {
+  if (is_single('cloud-hosting') && get_post_type() == 'product') {
     wp_enqueue_script('hosting-main-product');
     wp_enqueue_style('hosting-main-product');
   }
@@ -50,7 +49,9 @@ function WebPloverScripts()
     'cloud-hosting-diamond'
   ];
 
-  if (in_array($post->post_name, $wpr_hosting_plans) && $post->post_type === 'product') {
+  global $post;
+
+  if (get_post_type() == 'product' && in_array($post->post_name, $wpr_hosting_plans)) {
     wp_enqueue_script('hosting-plans-products');
     wp_enqueue_style('hosting-plans-products');
   }

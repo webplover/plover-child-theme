@@ -18,7 +18,7 @@ add_action('woocommerce_before_single_product', function () {
     'cloud-hosting-diamond'
   ];
 
-  if (in_array($product->slug, $wpr_products)) {
+  if (in_array($product->get_slug(), $wpr_products)) {
 
     /**
      * Hook: woocommerce_before_single_product_summary.

@@ -91,10 +91,10 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
 
   foreach (WC()->cart->get_cart() as $item) {
 
-    $sub_renewal_id = $item['subscription_renewal']['subscription_id'];
-    $sub_switch_id = $item['subscription_switch']['subscription_id'];
+    $sub_renewal_id = $item['subscription_renewal']['subscription_id'] ?? null;
+    $sub_switch_id = $item['subscription_switch']['subscription_id'] ?? null;
 
-    if (!empty($sub_renewal_id) || !empty($sub_switch_id))
+    if ($sub_renewal_id || $sub_switch_id)
       unset($fields['billing']['billing_website']);
   }
 
@@ -119,10 +119,10 @@ add_action('woocommerce_after_checkout_form', function () {
 
   foreach (WC()->cart->get_cart() as $cart_item) {
 
-    $subscription_renewal = $cart_item['subscription_renewal']['subscription_id'];
-    $subscription_switch = $cart_item['subscription_switch']['subscription_id'];
+    $subscription_renewal = $cart_item['subscription_renewal']['subscription_id'] ?? null;
+    $subscription_switch = $cart_item['subscription_switch']['subscription_id'] ?? null;
 
-    if (isset($subscription_renewal) || $subscription_switch) {
+    if ($subscription_renewal || $subscription_switch) {
       $product_id = $subscription_renewal ?? $subscription_switch;
       $get_website = wcs_get_subscription($product_id)->get_meta('_billing_website');
       echo '<div id="wpr_subscription_domain">
@@ -132,3 +132,60 @@ add_action('woocommerce_after_checkout_form', function () {
     }
   }
 });
+
+
+
+/**
+ * Use some coupon codes only in Pakistan, this code will check if the user is from pakistan and also
+ * user make sure, user is not using vpn.
+ * This will make only pk coupons base on their id's
+ */
+
+add_filter('woocommerce_coupon_is_valid',  function ($is_valid, $coupon) {
+
+  // Get API data
+
+  $key = "MTQ2OTc6eDhaOVBuQnJuMFJtNGVkOXpTN2V2bFRSeW92REZEb3k=";
+  $url = 'http://v2.api.iphub.info/ip/' . $_SERVER['REMOTE_ADDR'] . "?key=" . $key;
+
+  $ch = curl_init();
+  curl_setopt($ch, CURLOPT_URL, $url);
+  curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+  $output = json_decode(curl_exec($ch));
+  curl_close($ch);
+
+  // Get specific copons data from coupons id's
+  $query = new WP_Query(['post_type' => 'shop_coupon', 'post__in' => [59, 63]]);
+
+  $pk_coupons = [];
+
+  if ($query->have_posts()) {
+    while ($query->have_posts()) {
+      $query->the_post();
+
+      $pk_coupons[] = strtolower(get_the_title());
+    }
+  }
+  wp_reset_postdata();
+
+  // Restriction
+  if ($output->countryCode != 'PK') {
+    if (in_array($coupon->get_code(), $pk_coupons)) {
+      $is_valid = false;
+    }
+  } elseif ($output->block > 0) {
+    if (in_array($coupon->get_code(), $pk_coupons)) {
+      $is_valid = false;
+    }
+  }
+
+
+  return $is_valid;
+}, 99, 2);
+
+
+/**
+ * Trim zeros in price decimals
+ **/
+add_filter('woocommerce_price_trim_zeros', '__return_true');
+

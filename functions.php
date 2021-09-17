@@ -1,6 +1,6 @@
 <?php
 
-define('WPR_THEME_VERSION', '1.1.6');
+define('WPR_THEME_VERSION', '1.1.2');
 
 // Enqueue Scripts
 
